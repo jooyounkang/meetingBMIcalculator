@@ -1,0 +1,1083 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>미팅 빅맥 지수 계산기</title>
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%94%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="방금 미팅, 빅맥 몇 개의 가치가 있었습니까?">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Diphylleia&family=Gabarito:wght@800&family=Orbit&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --cream: #fff8e8;
+      --red: #db191e;
+      --yellow: #ffbc0d;
+      --ink: #26221d;
+      --muted: #7a7063;
+      --line: #dfd6c5
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: Orbit, sans-serif
+    }
+
+    button,
+    input {
+      font: inherit
+    }
+
+    button {
+      cursor: pointer
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid #2379d9;
+      outline-offset: 4px
+    }
+
+    button {
+      touch-action: manipulation
+    }
+
+    header {
+      max-width: 1280px;
+      margin: auto;
+      padding: 26px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      font: 800 19px/.96 Gabarito, sans-serif;
+      letter-spacing: -.6px
+    }
+
+    .brand svg {
+      width: 42px;
+      height: 39px;
+      margin-right: 3px
+    }
+
+    .brand small {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 2.3px;
+      margin-top: 5px
+    }
+
+    .edition {
+      font: 800 12px Gabarito, sans-serif;
+      letter-spacing: 2px;
+      color: var(--red)
+    }
+
+    main {
+      max-width: 1160px;
+      margin: auto;
+      padding: 65px 28px 0
+    }
+
+    .eyebrow {
+      color: var(--red);
+      font: 800 12px Gabarito, sans-serif;
+      letter-spacing: 2px
+    }
+
+    .intro h1 {
+      font-size: clamp(38px, 5.2vw, 66px);
+      line-height: 1.3;
+      letter-spacing: -3px;
+      margin: 17px 0 20px
+    }
+
+    .intro h1 span {
+      color: var(--red)
+    }
+
+    .intro p {
+      font-size: 14px;
+      line-height: 1.9;
+      color: var(--muted)
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 70px;
+      align-items: start
+    }
+
+    .poster-wrap {
+      position: relative;
+      margin-top: 35px
+    }
+
+    .poster {
+      margin-top: 0;
+      background: var(--yellow);
+      height: 235px;
+      border-radius: 140px 140px 12px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden
+    }
+
+    .poster .symbol {
+      font-size: 122px;
+      transform: rotate(-12deg);
+      filter: drop-shadow(7px 14px 0 #ba7c1024)
+    }
+
+    .poster-wrap .stamp {
+      position: absolute;
+      right: -17px;
+      top: 12px;
+      z-index: 2;
+      background: var(--red);
+      color: #fff;
+      border-radius: 50%;
+      width: 82px;
+      height: 82px;
+      display: grid;
+      place-content: center;
+      text-align: center;
+      font: 800 13px/1.3 Gabarito, sans-serif;
+      transform: rotate(12deg)
+    }
+
+    .poster-caption {
+      display: flex;
+      justify-content: space-between;
+      font: 800 11px Gabarito, sans-serif;
+      letter-spacing: 1px;
+      margin-top: 13px
+    }
+
+    .form-card {
+      background: #fffdf7;
+      border: 1px solid var(--line);
+      padding: 29px 30px;
+      border-radius: 5px;
+      box-shadow: 7px 7px 0 #eadfca66
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px
+    }
+
+    .section-head h2 {
+      font-size: 17px;
+      margin: 0
+    }
+
+    .badge {
+      background: #f2eddf;
+      border-radius: 30px;
+      padding: 6px 11px;
+      font-size: 11px
+    }
+
+    .people {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 22px
+    }
+
+    .person {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .rank {
+      font: 800 16px Gabarito, sans-serif
+    }
+
+    .stepper {
+      display: flex;
+      align-items: center;
+      gap: 3px
+    }
+
+    .stepper button {
+      background: transparent;
+      border: 1px solid var(--line);
+      width: 27px;
+      height: 28px;
+      border-radius: 50%;
+      font-family: sans-serif;
+      color: var(--muted)
+    }
+
+    .stepper input {
+      width: 35px;
+      border: 0;
+      background: transparent;
+      text-align: center;
+      font: 800 18px Gabarito, sans-serif;
+      appearance: textfield;
+      -moz-appearance: textfield
+    }
+
+    .stepper input::-webkit-inner-spin-button {
+      appearance: none
+    }
+
+    .time-block {
+      margin-top: 28px
+    }
+
+    .time-input {
+      display: flex;
+      align-items: center;
+      border-bottom: 2px solid var(--ink);
+      padding: 8px 0;
+      margin-top: 10px
+    }
+
+    .time-input input {
+      background: transparent;
+      border: 0;
+      width: 100%;
+      font: 800 36px Gabarito, sans-serif;
+      outline-offset: 0
+    }
+
+    .presets {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px
+    }
+
+    .presets button {
+      border: 1px solid var(--line);
+      background: transparent;
+      border-radius: 4px;
+      padding: 7px 15px;
+      font-size: 11px
+    }
+
+    .presets button.active {
+      background: var(--ink);
+      color: white;
+      border-color: var(--ink)
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 26px 0;
+      padding-top: 22px;
+      border-top: 1px dashed var(--line);
+      gap: 12px
+    }
+
+    .toggle-row strong {
+      font-size: 13px
+    }
+
+    .toggle-row small {
+      display: block;
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 7px
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      flex-shrink: 0;
+      width: 49px;
+      height: 28px
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      margin: 0;
+      z-index: 1;
+      cursor: pointer
+    }
+
+    .switch span {
+      display: block;
+      background: #ddd6c9;
+      border-radius: 30px;
+      height: 100%
+    }
+
+    .switch span:after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 4px;
+      top: 4px;
+      border-radius: 50%;
+      background: white;
+      transition: .2s
+    }
+
+    .switch input:checked+span {
+      background: var(--red)
+    }
+
+    .switch input:checked+span:after {
+      transform: translateX(21px)
+    }
+
+    .switch input:focus-visible+span {
+      outline: 3px solid #2379d9;
+      outline-offset: 4px
+    }
+
+    .primary {
+      width: 100%;
+      border: 0;
+      background: var(--red);
+      color: white;
+      padding: 19px;
+      border-radius: 4px;
+      font-size: 15px;
+      display: flex;
+      justify-content: space-between
+    }
+
+    .primary:hover {
+      background: #b90e15
+    }
+
+    .fine {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.8;
+      margin: 13px 0 0
+    }
+
+    .footer {
+      margin: 65px auto 0;
+      padding: 23px 0;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 10px;
+      gap: 20px
+    }
+
+    .footer a {
+      color: inherit
+    }
+
+    .hidden {
+      display: none !important
+    }
+
+    .result-top {
+      text-align: center;
+      padding: 0 0 48px
+    }
+
+    .result-top .eyebrow {
+      margin-bottom: 20px
+    }
+
+    .receipt-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 15px
+    }
+
+    .receipt-inputs {
+      font-size: 11px;
+      line-height: 1.8;
+      color: var(--muted);
+      margin: -7px 0 18px
+    }
+
+    .total {
+      font: 800 clamp(30px, 4vw, 48px) Gabarito, Orbit, sans-serif;
+      letter-spacing: -1px
+    }
+
+    .total span {
+      font: 14px Orbit, sans-serif;
+      letter-spacing: 0
+    }
+
+    .question {
+      font-size: clamp(22px, 3.3vw, 38px);
+      line-height: 1.7;
+      margin: 27px 0 10px;
+      letter-spacing: -1.5px
+    }
+
+    .bigmac {
+      display: block;
+      color: var(--red);
+      line-height: 1.1;
+      margin: 10px 0 16px
+    }
+
+    .bigmac b {
+      font: 800 clamp(70px, 12vw, 132px) Gabarito, sans-serif;
+      letter-spacing: -5px
+    }
+
+    .bigmac em {
+      font-style: normal;
+      font-size: 32px
+    }
+
+    .result-note {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .opportunities {
+      border-top: 1px dashed var(--muted);
+      border-bottom: 1px dashed var(--muted);
+      padding: 30px 0;
+      margin-top: 25px
+    }
+
+    .opportunities h2 {
+      font-size: 15px;
+      text-align: center;
+      margin: 0 0 27px
+    }
+
+    .alternatives {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px
+    }
+
+    .alternative {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      justify-content: center;
+      padding: 15px
+    }
+
+    .alternative:nth-child(even) {
+      border-left: 1px solid var(--line)
+    }
+
+    .alternative:nth-child(n+3) {
+      border-top: 1px solid var(--line);
+      padding-top: 25px
+    }
+
+    .alternative .emoji {
+      font-size: 41px
+    }
+
+    .alternative p {
+      font-size: 12px;
+      line-height: 1.8;
+      margin: 0
+    }
+
+    .alternative strong {
+      display: block;
+      font: 800 35px Gabarito, Orbit, sans-serif
+    }
+
+    .alternative strong small {
+      font: 15px Orbit, sans-serif
+    }
+
+    .basis {
+      text-align: center;
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.9;
+      margin-top: 24px
+    }
+
+    .principles {
+      max-width: 850px;
+      margin: 65px auto 0;
+      font-family: Diphylleia, serif
+    }
+
+    .principles .eyebrow {
+      text-align: center
+    }
+
+    .elon-gif {
+      display: block;
+      width: 50vw;
+      height: auto;
+      margin: 0 auto 32px
+    }
+
+    .principles h2 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 400;
+      margin: 15px 0 38px
+    }
+
+    .principle {
+      border-top: 1px solid var(--line);
+      padding: 20px 0
+    }
+
+    .principle summary {
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1.6
+    }
+
+    .principle p {
+      font-size: 16px;
+      line-height: 1.95;
+      margin-bottom: 0;
+      color: #514a40
+    }
+
+    .closing {
+      text-align: center;
+      font-size: clamp(27px, 4vw, 47px);
+      letter-spacing: -2px;
+      line-height: 1.6;
+      margin: 58px 0 25px
+    }
+
+    .confirmation-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 0 auto 35px
+    }
+
+    .confirmation-actions button {
+      min-width: 100px;
+      padding: 12px 28px;
+      border: 1px solid var(--ink);
+      border-radius: 4px;
+      background: transparent
+    }
+
+    .confirmation-actions button:hover {
+      background: var(--ink);
+      color: white
+    }
+
+    .confirmation-dialog {
+      width: min(560px, calc(100% - 32px));
+      text-align: center
+    }
+
+    .confirmation-dialog .again {
+      display: block;
+      min-width: 100px;
+      margin: 0 auto;
+      padding: 12px 28px;
+      border: 1px solid var(--ink);
+      border-radius: 4px;
+      background: transparent;
+      color: var(--ink);
+      font: inherit
+    }
+
+    .confirmation-dialog .again:hover {
+      background: var(--ink);
+      color: white
+    }
+
+    .confirmation-dialog img {
+      display: block;
+      width: min(100%, 480px);
+      max-height: 55vh;
+      object-fit: contain;
+      margin: 0 auto 22px;
+      border-radius: 6px
+    }
+
+    .again {
+      display: block;
+      margin: 0 auto;
+      border: 1px solid var(--ink);
+      background: transparent;
+      border-radius: 4px;
+      padding: 13px 28px;
+      font-size: 12px
+    }
+
+    .pile {
+      height: 150px;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 4;
+      pointer-events: none;
+      margin: 0;
+      overflow: hidden
+    }
+
+    .burger {
+      position: absolute;
+      line-height: 1;
+      will-change: transform;
+      user-select: none
+    }
+
+    .rain {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 5;
+      overflow: hidden
+    }
+
+    .result-wrap {
+      max-width: 950px;
+      margin: auto
+    }
+
+    dialog {
+      border: 0;
+      border-radius: 12px;
+      background: var(--cream);
+      max-width: calc(100% - 40px);
+      padding: 32px;
+      text-align: center;
+      box-shadow: 0 20px 80px #0004
+    }
+
+    dialog::backdrop {
+      background: #26221d88
+    }
+
+    dialog p {
+      font-size: 15px;
+      line-height: 1.9
+    }
+
+    dialog button {
+      background: var(--red);
+      border: 0;
+      color: white;
+      border-radius: 4px;
+      padding: 12px 35px
+    }
+
+    dialog .emoji {
+      font-size: 42px
+    }
+
+    .empty-error {
+      color: var(--red);
+      font-size: 11px;
+      min-height: 15px;
+      margin: 12px 0 0
+    }
+
+    @media(min-width:1000px) {
+      .intro {
+        padding-top: 13px
+      }
+    }
+
+    @media(max-width:760px) {
+      header {
+        padding: 20px 22px
+      }
+
+      .edition {
+        font-size: 9px
+      }
+
+      .brand {
+        font-size: 15px
+      }
+
+      .brand svg {
+        width: 34px
+      }
+
+      .brand small {
+        font-size: 10px
+      }
+
+      main {
+        padding: 35px 20px 0
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+        gap: 28px
+      }
+
+      .intro h1 {
+        letter-spacing: -2px;
+        margin-top: 12px
+      }
+
+      .intro p {
+        font-size: 12px
+      }
+
+      .poster-wrap {
+        display: none
+      }
+
+      .poster-caption {
+        display: none
+      }
+
+      .form-card {
+        padding: 25px 22px
+      }
+
+      .footer {
+        margin-top: 40px;
+        font-size: 9px
+      }
+
+      .alternatives {
+        grid-template-columns: 1fr;
+        gap: 10px
+      }
+
+      .alternative {
+        justify-content: flex-start;
+        padding: 15px 20px
+      }
+
+      .alternative:nth-child(even) {
+        border-left: 0
+      }
+
+      .alternative:nth-child(n+2) {
+        border-top: 1px solid var(--line);
+        padding-top: 25px
+      }
+
+      .principles {
+        margin-top: 45px
+      }
+
+      .principles h2 {
+        font-size: 23px
+      }
+
+      .principle summary {
+        font-size: 17px
+      }
+
+      .principle p {
+        font-size: 14px
+      }
+
+      .result-top {
+        padding-bottom: 25px
+      }
+
+      .closing {
+        letter-spacing: -1px
+      }
+
+      .bigmac b {
+        letter-spacing: -3px
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      * {
+        scroll-behavior: auto !important;
+        transition: none !important
+      }
+    }
+
+    .pile {
+      height: 0;
+      overflow: visible
+    }
+
+    .pile .burger,
+    .rain .burger {
+      pointer-events: auto;
+      cursor: pointer
+    }
+
+    .burger.cash-flight {
+      pointer-events: none
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="brand" aria-label="Meeting Economics Lab"><svg xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 272.70001 238.5" aria-hidden="true">
+        <path fill="#ffbc0d"
+          d="m195.8 17.933c23.3 0 42.2 98.3 42.2 219.7h34c0-130.7-34.3-236.5-76.3-236.5-24 0-45.2 31.7-59.2 81.5-14-49.8-35.2-81.5-59-81.5-42 0-76.2 105.7-76.2 236.4h34c0-121.4 18.7-219.6 42-219.6s42.2 90.8 42.2 202.8h33.8c0-112 19-202.8 42.3-202.8" />
+      </svg>
+      <div>EETING<small>ECONOMICS LAB</small></div>
+    </div><span class="edition">TIME IS BIG MAC.</span>
+  </header>
+  <main>
+    <section id="input-view" class="layout">
+      <div class="intro">
+        <div class="eyebrow">THE BIG MAC INDEX / MEETING EDITION</div>
+        <h1>미팅 빅맥<br>지수 <span>계산기.</span></h1>
+        <p>시간은 돈이고, 돈은 빅맥입니다.<br>방금 그 미팅, 빅맥 몇 개짜리였을까요?</p>
+        <div class="poster-wrap">
+          <div class="poster" aria-hidden="true"><span class="symbol">🍔</span></div><span class="stamp"
+            aria-hidden="true">100%<br>MEETING<br>COST</span>
+        </div>
+        <div class="poster-caption"><span>LESS MEETING. MORE BIG MAC.</span><span>EST. 2026</span></div>
+      </div>
+      <form id="meeting-form" class="form-card">
+        <div class="section-head">
+          <h2>누가 참석했나요?</h2><span class="badge">총 <b id="headcount">0</b>명</span>
+        </div>
+        <div id="people" class="people"></div>
+        <div class="time-block"><label for="minutes">얼마나 오래 했나요?</label>
+          <div class="time-input"><input id="minutes" type="number" min="1" max="10080" step="1" value="60" required
+              aria-label="미팅 시간(분)"><span>분</span></div>
+          <div class="presets" aria-label="미팅 시간 프리셋"><button type="button" data-minutes="30">30분</button><button
+              type="button" class="active" data-minutes="60">1시간</button><button type="button"
+              data-minutes="120">2시간</button></div>
+        </div>
+        <div class="toggle-row">
+          <div><strong>광고주 참석 · 정신노동 가산</strong><small>참석 시 전체 미팅 비용 × 1.2</small></div><label class="switch"><input
+              id="client" type="checkbox" aria-label="광고주 참석 정신노동 가산"><span></span></label>
+        </div><button class="primary" type="submit"><span>빅맥 지수 계산하기</span><span aria-hidden="true">↗</span></button>
+        <p class="empty-error" id="error" role="alert"></p>
+        <p class="fine">2인 이상의 미팅부터 계산할 수 있습니다.<br>입력한 정보는 저장되거나 전송되지 않습니다.</p>
+      </form>
+    </section>
+    <section id="result-view" class="hidden result-wrap" aria-label="미팅 비용 계산 결과" tabindex="-1">
+      <div class="result-top">
+        <div class="eyebrow">YOUR MEETING RECEIPT</div>
+        <div class="receipt-meta" id="receipt-meta"></div>
+        <div class="receipt-inputs" id="receipt-inputs" aria-label="계산에 사용된 직급별 참석 인원"></div>
+        <div class="total"><span>전체 미팅 비용</span><br><b id="total-cost"></b><span> 원</span></div>
+        <h1 class="question">방금 미팅,<span class="bigmac">빅맥 <b id="bigmac-count"></b><em>개</em></span>의 가치가 있었습니까?</h1>
+        <p class="result-note">우리의 시간에도 가격표가 있다면.</p>
+      </div>
+      <div class="opportunities">
+        <h2>그 돈으로 할 수 있었던 다른 것들</h2>
+        <div class="alternatives">
+          <div class="alternative"><span class="emoji" aria-hidden="true">💸</span>
+            <p>2027 최저 시급<strong><span id="work-hours"></span><small>시간</small></strong>나의 회의시간, 과연 이만큼의 생산성일까?</p>
+          </div>
+          <div class="alternative"><span class="emoji" aria-hidden="true">☕</span>
+            <p>메가커피 아메리카노<strong><span id="coffee-count"></span><small>잔</small></strong>물도 이만큼 마시면 탈나요.</p>
+          </div>
+          <div class="alternative"><span class="emoji" aria-hidden="true">🏙️</span>
+            <p>한남더힐 26평<strong><span id="apartment-count"></span><small>채</small></strong>아무리 영끌해도, 이건 무리긴 해.</p>
+          </div>
+          <div class="alternative"><span class="emoji" aria-hidden="true">📱</span>
+            <p>갤럭시 Z 폴드8 울트라<strong><span id="phone-count"></span><small>대</small></strong>똑똑한 폰을 사면, 회의가 더 똑똑해질 수 있을까?
+            </p>
+          </div>
+        </div>
+        <div class="basis">환산 기준 · 빅맥 5,700원 / 아메리카노 1,700원 / 2027 최저 시급 10,700원<br>한남더힐 26평 매매가 3,840,000,000원 / 갤럭시 Z
+          폴드8 울트라 2,577,300원<br>모든 환산 기준은 계산기 내 고정 참고값이며 실시간 시세가 아닙니다. 총 미팅 비용은 원 단위 반올림 추정치입니다.<br>직급별 인건비는 러프한 참고값이며
+          실제 급여와 다를 수 있습니다.</div>
+      </div>
+      <section class="principles">
+        <div class="eyebrow">A LITTLE FOOD FOR THOUGHT</div>
+        <h2>〈일론 머스크의 6가지 생산성 원칙〉</h2>
+        <img class="elon-gif" src="https://c.tenor.com/wOpe0zah16cAAAAd/tenor.gif" alt="일론 머스크 GIF">
+        <details class="principle" open>
+          <summary>1. 대규모 회의를 피해라.</summary>
+          <p><strong>대규모 회의는 소중한 시간과 에너지를 낭비시킨다.</strong> 모든 참여자에게 가치를 제공한다는 확신이 없으면 하지 말아라. <strong>(1) 대규모 회의는 사람이 너무
+              많아 토론이 어렵다. (2) 사람을 의식해 개방적이기보다 수비적이게 된다. (3) 모든 사람이 참여할 시간이 없다.</strong></p>
+        </details>
+        <details class="principle" open>
+          <summary>2. 회의에 기여하는 바가 없으면 나가라.</summary>
+          <p>만약 회의에서 <strong>(1) 발언하는 일이 없고 (2) 가치를 제공하지 못하고 (3) 결정할 일이 없다면</strong> 당신이 참석할 필요가 없다. 이럴 땐 회의에서 나가라. 회의에서
+            나가는 것은 무례한 일이 아니다. 오히려 쓸데없이 회의에 참석해 사람들의 시간을 낭비시키는 것이 더 무례하다.</p>
+        </details>
+        <details class="principle" open>
+          <summary>3. 명령체계에 순응하지 말아라.</summary>
+          <p>상사나 매니저를 통하기보다 필요한 일은 동료와 직접적으로 소통해라. <strong>빠른 소통은 빠른 결정을 만든다.</strong> 빠른 결정이 곧 경쟁 우위다. 메신저나 메일로 빠르게
+            소통해라.</p>
+        </details>
+        <details class="principle" open>
+          <summary>4. 똑똑함보다는 명료함</summary>
+          <p><strong>무의미한 단어나 복잡하고 어려운 용어를 피해라.</strong> 이것은 소통을 지연시킨다. <strong>(1) 간결하고 (2) 명료하고 (3) 이해하기 쉽게
+              말해라.</strong> 똑똑해보이는 소리 하지 말고 효율적으로 소통해라.</p>
+        </details>
+        <details class="principle" open>
+          <summary>5. 잦은 회의는 시간낭비다.</summary>
+          <p>회의는 <strong>(1) 협력할 때 (2) 문제를 함께 해결해야 할 때 (3) 긴급한 문제의 처리가 필요할 때</strong> 해라. 다른 사람들의 업무를 불필요하게 방해하지 마라.</p>
+        </details>
+        <details class="principle" open>
+          <summary>6. 상식 대로(융통성 있게) 행동해라.</summary>
+          <p>다음과 같다면 회사의 규칙을 지키지 마라. <strong>(1) 문제가 안 되거나 (2) 진행상황에 기여하는 것이 아니거나 (3) 특수한 경우</strong> 당신의 눈을 가리는 규칙을 따르지
+            말고, 당신의 상식을 따라라.</p>
+        </details>
+      </section>
+      <h2 class="closing">당신의 미팅은<br>안녕하십니까?</h2>
+      <div class="confirmation-actions"><button type="button" data-confirm="yes">안녕해요 :)</button><button type="button"
+          data-confirm="no">안녕못해요 :(</button></div>
+    </section>
+    <footer class="footer"><span>MEETING ECONOMICS LAB © 2026<br>그 어느 기업과도 무관한 단순 재미용 콘텐츠입니다.</span></footer>
+  </main>
+  <div id="pile" class="pile hidden" aria-hidden="true"></div>
+  <div id="rain" class="rain" aria-hidden="true"></div>
+  <dialog id="solo">
+    <div class="emoji">✨</div>
+    <p>당신은 값을 매길 수 없는 소중한 존재입니다 :)</p>
+    <form method="dialog"><button>확인</button></form>
+  </dialog>
+  <dialog id="confirm-yes" class="confirmation-dialog" aria-label="안녕해요 응답"><img
+      src="https://www.shutterstock.com/shutterstock/photos/1932690956/display_1500/stock-photo-burger-on-the-sky-manipulation-1932690956.jpg"
+      alt="하늘을 나는 햄버거 이미지"><button type="button" class="again" data-return-input>다른 미팅 계산하기 ↗</button></dialog>
+  <dialog id="confirm-no" class="confirmation-dialog" aria-label="안녕못해요 응답"><img
+      src="https://i.pinimg.com/474x/de/28/93/de28937e892e71c3a0df3dd4d8fee670.jpg" alt="안녕못해요 응답 이미지"><button
+      type="button" class="again" data-return-input>다른 미팅 계산하기 ↗</button></dialog>
+  <script>
+    'use strict';
+    const RATES = { C1A: 85000, C1B: 105000, C2A: 135000, C2B: 154000, C3: 255000, Exec: 530000 };
+    const $ = id => document.getElementById(id), number = new Intl.NumberFormat('ko-KR'), decimal = new Intl.NumberFormat('ko-KR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }), decimal2 = new Intl.NumberFormat('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); function formatHouseCount(value) { if (value <= 0) return '0.0'; const digits = Math.min(20, Math.max(1, Math.ceil(-Math.log10(value)))); const scale = 10 ** digits; const rounded = Math.ceil(value * scale) / scale; return new Intl.NumberFormat('ko-KR', { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(rounded) }
+    function calculateMeeting(counts, minutes, client) { const subtotal = Object.entries(RATES).reduce((sum, [rank, rate]) => sum + rate * (counts[rank] || 0), 0); return Math.round(subtotal * minutes * (client ? 12 : 10) / 600) }
+    const countInputs = []; for (const rank of Object.keys(RATES)) { const row = document.createElement('div'); row.className = 'person'; row.innerHTML = `<label class="rank" for="count-${rank}">${rank}</label><div class="stepper"><button type="button" aria-label="${rank} 인원 줄이기">−</button><input id="count-${rank}" type="number" min="0" max="999" step="1" value="0" required aria-label="${rank} 참석 인원"><button type="button" aria-label="${rank} 인원 늘리기">+</button></div>`; $('people').append(row); const input = row.querySelector('input'); countInputs.push(input); row.querySelectorAll('button').forEach((btn, i) => btn.addEventListener('click', () => { input.value = Math.max(0, Math.min(999, (Number(input.value) || 0) + (i ? 1 : -1))); updateCount() })); input.addEventListener('input', updateCount) }
+    function updateCount() { $('headcount').textContent = countInputs.reduce((sum, input) => sum + (Number(input.value) || 0), 0); $('error').textContent = '' }
+    document.querySelectorAll('[data-minutes]').forEach(btn => btn.addEventListener('click', () => { $('minutes').value = btn.dataset.minutes; updatePresets() }));
+    function updatePresets() { document.querySelectorAll('[data-minutes]').forEach(btn => btn.classList.toggle('active', Number(btn.dataset.minutes) === Number($('minutes').value))) } $('minutes').addEventListener('input', updatePresets);
+    let rainTimer, animationFrame, particles = [], rainStarted = 0;
+    function stopRain() { clearTimeout(rainTimer); cancelAnimationFrame(animationFrame); particles = []; $('rain').classList.remove('background-rain'); $('rain').replaceChildren(); $('pile').replaceChildren(); $('pile').classList.add('hidden'); document.body.style.paddingBottom = '' }
+    function flyAwayBurgers() {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
+      $('rain').classList.remove('background-rain');
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const flock = [...document.querySelectorAll('#pile .burger:not(.cash-flight),#rain .burger:not(.cash-flight)')];
+      for (const node of flock) {
+        const base = node.style.transform || getComputedStyle(node).transform;
+        const rect = node.getBoundingClientRect();
+        const direction = rect.left + rect.width / 2 < innerWidth / 2 ? -1 : 1;
+        const distanceX = direction * (innerWidth * .65 + Math.random() * innerWidth * .45);
+        const distanceY = -(innerHeight * .9 + Math.random() * innerHeight * .5);
+        const flap = 14 + Math.random() * 14;
+        const path = (x, y, scale, tilt) => `${base} translate(${x}px,${y}px) scale(${scale}) rotate(${tilt}deg)`;
+        node.textContent = '💸';
+        node.classList.add('cash-flight');
+        const flight = node.animate([
+          { offset: 0, transform: base, opacity: 1 },
+          { offset: .13, transform: path(distanceX * .12, distanceY * .13 - 28, 1.3, flap), opacity: 1 },
+          { offset: .26, transform: path(distanceX * .25, distanceY * .26 + 12, .72, -flap), opacity: 1 },
+          { offset: .39, transform: path(distanceX * .38, distanceY * .39 - 30, 1.28, flap), opacity: 1 },
+          { offset: .52, transform: path(distanceX * .51, distanceY * .52 + 14, .74, -flap), opacity: 1 },
+          { offset: .65, transform: path(distanceX * .64, distanceY * .65 - 27, 1.25, flap), opacity: 1 },
+          { offset: .78, transform: path(distanceX * .77, distanceY * .78 + 10, .76, -flap), opacity: 1 },
+          { offset: .9, transform: path(distanceX * .9, distanceY * .9 - 22, 1.08, flap * .4), opacity: .9 },
+          { offset: 1, transform: path(distanceX, distanceY, .5, flap), opacity: 0 }
+        ], { duration: reduced ? 1 : 1900 + Math.random() * 700, delay: reduced ? 0 : Math.random() * 450, easing: 'linear', fill: 'forwards' });
+        flight.onfinish = () => node.remove();
+      }
+    }
+    function rainBurgers(amount) {
+      const requestedCount = Math.max(0, Math.ceil(amount));
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const fillMode = requestedCount >= 300;
+      let count = requestedCount, stackCapacity, stackStep, stackRowHeight;
+      if (fillMode) {
+        stackCapacity = Math.max(12, Math.min(28, Math.ceil(innerHeight / 48)));
+        count = stackCapacity * (stackCapacity + 1) / 2;
+        stackStep = innerWidth * .92 / stackCapacity;
+        stackRowHeight = innerHeight / stackCapacity;
+      } else {
+        stackCapacity = Math.ceil((Math.sqrt(count * 8 + 1) - 1) / 2);
+        stackStep = Math.min(40, Math.max(16, innerWidth * .9 / Math.max(1, stackCapacity)));
+        stackRowHeight = Math.max(25, stackStep * .8);
+      }
+      $('rain').classList.remove('background-rain');
+      $('pile').classList.remove('hidden');
+      rainStarted = performance.now();
+      const stackSlots = [];
+      let remaining = count, rowIndex = 0;
+      while (remaining > 0) {
+        const rowCount = Math.min(Math.max(1, stackCapacity - rowIndex), remaining);
+        const rowStart = (innerWidth - (rowCount - 1) * stackStep) / 2;
+        for (let column = 0; column < rowCount; column++)stackSlots.push({ x: rowStart + column * stackStep, bottom: rowIndex * stackRowHeight, row: rowIndex });
+        remaining -= rowCount;
+        rowIndex++;
+      }
+      for (let i = 0; i < count; i++) {
+        const node = document.createElement('span');
+        node.className = 'burger';
+        node.textContent = '🍔';
+        const size = fillMode ? Math.max(30, Math.min(55, Math.min(stackStep, stackRowHeight) * 1.1)) : 30 + Math.random() * 25;
+        const x = Math.random(), rotation = Math.random() * 70 - 35;
+        node.style.fontSize = size + 'px';
+        const slot = stackSlots[i];
+        const particle = { node, size, x, rotation, delay: slot.row * 90 + Math.random() * 400, duration: 1500 + Math.random() * 1100, stackX: slot.x, landY: slot.bottom, landed: false };
+        particles.push(particle);
+        $('rain').append(node);
+      }
+      function frame(now) {
+        let active = false;
+        const pileTop = $('pile').getBoundingClientRect().top;
+        for (const p of particles) {
+          if (p.landed) continue;
+          const elapsed = now - rainStarted - p.delay;
+          const t = reduced ? 1 : Math.max(0, Math.min(1, elapsed / p.duration));
+          const x = p.x * Math.max(0, innerWidth - p.size);
+          p.node.style.visibility = elapsed < 0 && !reduced ? 'hidden' : 'visible';
+          if (t >= 1) {
+            p.landed = true;
+            $('pile').append(p.node);
+            p.node.style.left = p.stackX + 'px';
+            p.node.style.bottom = p.landY + 'px';
+            p.node.style.transform = `translateX(-50%) rotate(${p.rotation}deg)`;
+            p.node.title = '클릭하면 쌓인 햄버거가 모두 날개 달린 돈 이모지로 날아갑니다';
+            p.node.addEventListener('click', flyAwayBurgers, { once: true });
+          } else {
+            active = true;
+            const y = -70 + (pileTop - p.landY - p.size + 70) * t * t;
+            p.node.style.transform = `translate(${x}px,${y}px) rotate(${p.rotation + t * 260}deg)`;
+          }
+        }
+        if (active) animationFrame = requestAnimationFrame(frame);
+      }
+      animationFrame = requestAnimationFrame(frame);
+    }
+    $('meeting-form').addEventListener('submit', event => { event.preventDefault(); const counts = Object.fromEntries(Object.keys(RATES).map((rank, i) => [rank, Number(countInputs[i].value)])); const totalPeople = Object.values(counts).reduce((a, b) => a + b, 0); if (totalPeople === 1) { $('solo').showModal(); return } if (totalPeople < 2) { $('error').textContent = '참석자를 2명 이상 입력해 주세요.'; return } const minutes = Number($('minutes').value), client = $('client').checked, total = calculateMeeting(counts, minutes, client); stopRain(); $('total-cost').textContent = number.format(total); $('bigmac-count').textContent = decimal.format(total / 5700); $('work-hours').textContent = decimal.format(total / 10700); $('coffee-count').textContent = decimal.format(total / 1700); $('apartment-count').textContent = formatHouseCount(total / 3840000000); $('phone-count').textContent = decimal2.format(total / 2577300); $('receipt-meta').textContent = `참석 ${number.format(totalPeople)}명 · ${number.format(minutes)}분${client ? ' · 정신노동 가산 ×1.2' : ''}`; $('receipt-inputs').textContent = Object.entries(counts).map(([rank, count]) => `${rank} ${number.format(count)}명`).join(' · '); $('input-view').classList.add('hidden'); $('result-view').classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'instant' }); $('result-view').focus({ preventScroll: true }); rainTimer = setTimeout(() => rainBurgers(total / 5700), 3000) });
+    document.querySelectorAll('[data-confirm]').forEach(button => button.addEventListener('click', () => $(button.dataset.confirm === 'yes' ? 'confirm-yes' : 'confirm-no').showModal())); function returnToInput() { stopRain(); $('result-view').classList.add('hidden'); $('input-view').classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'instant' }); countInputs[0].focus({ preventScroll: true }) } document.querySelectorAll('[data-return-input]').forEach(button => button.addEventListener('click', () => { button.closest('dialog').close(); returnToInput() }));
+  </script>
+</body>
+
+</html>
